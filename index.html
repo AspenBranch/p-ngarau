@@ -1,854 +1,1104 @@
 <!DOCTYPE html>
-<html> 
-  <head>
-    <title>pekepeke</title> 
-  </head>
-  <body>
-    <canvas id="pekepeke"></canvas> 
-  </body>
-  <script src="https://cdn.jsdelivr.net/processing.js/1.4.8/processing.min.js"></script> 
-  <script>
-  var programCode = function(processingInstance) {
-    with (processingInstance) {
-      size(400, 400); 
-      frameRate(60);
-        
-var blocks=[];
-var level=0;
-var player;
-var BG=[154, 228, 255];
-var levelWidth=0;
-var levelHeight=0;
-var scene=1;
-var rotation1=random(-360,360);
-var rotation2=random(-360,360);
-var rotation3=random(-360,360);
-function Block(x,y,type){
-    this.x=x;
-    this.type=type;
-    this.y=y;
-    this.designY=y;
-    this.Sz=100;
-    this.portalConnection={
-        isPortal:false,
-        connectionX:this.x,
-        connectionY:this.y
-    };
-    this.deathFloating=random(-360,360);
-    this.timer=0;
-    this.timerCount=0;
-    this.detectBlocks=function(blocks){
-        for(var i=0;i<blocks.length;i++){
-            var b=blocks[i];
-            switch(this.type){
-                case 1:
-                break;
-                case 2:
-                break;
-                case 3:
-                break;
-                case 4:
-                    this.portalConnection.isPortal=true;
-                    if(this.type===b.type&&this.y===b.y&&this.x!==b.x){
-                        this.portalConnection.connectionX=b.x;
-                        this.portalConnection.connectionY=b.y;
-                    }
-                break;
-            }
-        }
-    };
-    this.animate=function(){
-        switch(this.type){
-            case 1:
-            break;
-            case 2:
-                this.designY-=0.1*sin(this.deathFloating);
-                this.deathFloating+=2;
-            break;
-            case 3:
-            break;
-            case 4:
-            break;
-            case 5:
-            break;
-            case 6:
-                this.designY-=0.2*sin(this.deathFloating);
-                this.deathFloating+=2*1;
-                this.timer++;
-                if(this.timer%120===0){
-                    this.timerCount++;
-                }
-            break;
-        }
-    };
-    this.show=function(){
-        switch(this.type){
-            case 1:
-                noStroke();
-            fill(BG[0]*1.2,BG[1]*1.2,BG[2]*1.2);
-            beginShape();
-                vertex(this.x-this.Sz/2,height*10);
-                vertex(this.x-this.Sz/2,this.y+this.Sz/4);
-                vertex(this.x,this.y+this.Sz/2);
-                vertex(this.x,height*10);
-            endShape(CLOSE);
-            fill(BG[0]*1.1,BG[1]*1.1,BG[2]*1.1);
-            beginShape();
-            vertex(this.x,height*10);
-            vertex(this.x,this.y+this.Sz/2);
-            vertex(this.x+this.Sz/2,this.y+this.Sz/4);
-            vertex(this.x+this.Sz/2,height*10);
-            endShape(CLOSE);
-                strokeWeight(3);
-                fill(25,35,48);
-                stroke(25,35,48);
-                strokeCap(SQUARE);
-            beginShape();
-                vertex(this.x-this.Sz/2,this.y);
-                vertex(this.x,this.y-this.Sz/4);
-                vertex(this.x+this.Sz/2,this.y);
-                vertex(this.x,this.y+this.Sz/4);
-            endShape(CLOSE);
-            stroke(25*0.5,35*0.5,48*0.5);
-            fill(25*0.5,35*0.5,48*0.5);
-            beginShape();
-                vertex(this.x-this.Sz/2,this.y);
-                vertex(this.x,this.y+this.Sz/4);
-                vertex(this.x+this.Sz/2,this.y);
-                vertex(this.x+this.Sz/2,this.y+this.Sz/4);
-                vertex(this.x,this.y+this.Sz/2);
-                vertex(this.x-this.Sz/2,this.y+this.Sz/4);
-            endShape(CLOSE);
-            break;
-            case 2:
-                noStroke();
-            fill(BG[0]*1.2,BG[1]*1.2,BG[2]*1.2);
-            beginShape();
-                vertex(this.x-this.Sz/2,height*10);
-                vertex(this.x-this.Sz/2,this.designY+this.Sz/4);
-                vertex(this.x,this.designY+this.Sz/2);
-                vertex(this.x,height*10);
-            endShape(CLOSE);
-            fill(BG[0]*1.1,BG[1]*1.1,BG[2]*1.1);
-            beginShape();
-            vertex(this.x,height*10);
-            vertex(this.x,this.designY+this.Sz/2);
-            vertex(this.x+this.Sz/2,this.designY+this.Sz/4);
-            vertex(this.x+this.Sz/2,height*10);
-            endShape(CLOSE);
-                fill(25,35,48);
-            beginShape();
-                vertex(this.x-this.Sz/2,this.designY);
-                vertex(this.x,this.designY-this.Sz/4);
-                vertex(this.x+this.Sz/2,this.designY);
-                vertex(this.x,this.designY+this.Sz/4);
-            endShape(CLOSE);
-            beginShape();
-                vertex(this.x-this.Sz/2,this.designY);
-                vertex(this.x,this.designY+this.Sz/4);
-                vertex(this.x+this.Sz/2,this.designY);
-                vertex(this.x+this.Sz/2,this.designY+this.Sz/4);
-                vertex(this.x,this.designY+this.Sz/2);
-                vertex(this.x-this.Sz/2,this.designY+this.Sz/4);
-            endShape(CLOSE);
-            fill(146, 69, 255,200);
-            beginShape();
-            vertex(this.x-this.Sz/2+10,this.designY);
-            vertex(this.x,this.designY-this.Sz/2);
-            vertex(this.x,this.designY+this.Sz/4-10);
-            endShape(CLOSE);
-            fill(146*0.8, 69*0.8, 255*0.8,200);
-            beginShape();
-            vertex(this.x,this.designY-this.Sz/2);
-            vertex(this.x,this.designY+this.Sz/4-10);
-            vertex(this.x+this.Sz/2-10,this.designY);
-            endShape(CLOSE);
-            break;
-            case 3:
-                noStroke();
-            fill(BG[0]*1.2,BG[1]*1.2,BG[2]*1.2);
-            beginShape();
-                vertex(this.x-this.Sz/2,height*10);
-                vertex(this.x-this.Sz/2,this.y+this.Sz/4);
-                vertex(this.x,this.y+this.Sz/2);
-                vertex(this.x,height*10);
-            endShape(CLOSE);
-            fill(BG[0]*1.1,BG[1]*1.1,BG[2]*1.1);
-            beginShape();
-            vertex(this.x,height*10);
-            vertex(this.x,this.y+this.Sz/2);
-            vertex(this.x+this.Sz/2,this.y+this.Sz/4);
-            vertex(this.x+this.Sz/2,height*10);
-            endShape(CLOSE);
-                strokeWeight(3);
-                fill(25,35,48);
-                stroke(25,35,48);
-                strokeCap(SQUARE);
-            beginShape();
-                vertex(this.x-this.Sz/2,this.y);
-                vertex(this.x,this.y-this.Sz/4);
-                vertex(this.x+this.Sz/2,this.y);
-                vertex(this.x,this.y+this.Sz/4);
-            endShape(CLOSE);
-            stroke(25*0.5,35*0.5,48*0.5);
-            fill(25*0.5,35*0.5,48*0.5);
-            beginShape();
-                vertex(this.x-this.Sz/2,this.y);
-                vertex(this.x,this.y+this.Sz/4);
-                vertex(this.x+this.Sz/2,this.y);
-                vertex(this.x+this.Sz/2,this.y+this.Sz/4);
-                vertex(this.x,this.y+this.Sz/2);
-                vertex(this.x-this.Sz/2,this.y+this.Sz/4);
-            endShape(CLOSE);
-            break;
-            case 4:
-                noStroke();
-                fill(BG[0]*1.2,BG[1]*1.2,BG[2]*1.2);
-                beginShape();
-                    vertex(this.x-this.Sz/2,height*10);
-                    vertex(this.x-this.Sz/2,this.y+this.Sz/4);
-                    vertex(this.x,this.y+this.Sz/2);
-                    vertex(this.x,height*10);
-                endShape(CLOSE);
-                fill(BG[0]*1.1,BG[1]*1.1,BG[2]*1.1);
-                beginShape();
-                vertex(this.x,height*10);
-                vertex(this.x,this.y+this.Sz/2+10);
-                vertex(this.x+this.Sz/2,this.y+this.Sz/4+10);
-                vertex(this.x+this.Sz/2,height*10);
-                endShape(CLOSE);
-                    strokeWeight(3);
-                    fill(94, 255, 135);
-                    stroke(94, 255, 135);
-                    strokeCap(SQUARE);
-                beginShape();
-                    vertex(this.x-this.Sz/2,this.y);
-                    vertex(this.x,this.y-this.Sz/4);
-                    vertex(this.x+this.Sz/2,this.y);
-                    vertex(this.x,this.y+this.Sz/4);
-                endShape(CLOSE);
-                stroke(25*0.5,35*0.5,48*0.5);
-                fill(25*0.5,35*0.5,48*0.5);
-                beginShape();
-                    vertex(this.x-this.Sz/2,this.y);
-                    vertex(this.x,this.y+this.Sz/4);
-                    vertex(this.x+this.Sz/2,this.y);
-                    vertex(this.x+this.Sz/2,this.y+this.Sz/4);
-                    vertex(this.x,this.y+this.Sz/2);
-                    vertex(this.x-this.Sz/2,this.y+this.Sz/4);
-                endShape(CLOSE);
-            break;
-            case 5:
-                noStroke();
-                fill(BG[0]*1.2,BG[1]*1.2,BG[2]*1.2);
-                beginShape();
-                    vertex(this.x-this.Sz/2,height*10);
-                    vertex(this.x-this.Sz/2,this.y+this.Sz/4);
-                    vertex(this.x,this.y+this.Sz/2);
-                    vertex(this.x,height*10);
-                endShape(CLOSE);
-                fill(BG[0]*1.1,BG[1]*1.1,BG[2]*1.1);
-                beginShape();
-                vertex(this.x,height*10);
-                vertex(this.x,this.y+this.Sz/2+10);
-                vertex(this.x+this.Sz/2,this.y+this.Sz/4+10);
-                vertex(this.x+this.Sz/2,height*10);
-                endShape(CLOSE);
-                    strokeWeight(3);
-                    fill(255, 226, 72);
-                    stroke(255, 226, 72);
-                    strokeCap(SQUARE);
-                beginShape();
-                    vertex(this.x-this.Sz/2,this.y);
-                    vertex(this.x,this.y-this.Sz/4);
-                    vertex(this.x+this.Sz/2,this.y);
-                    vertex(this.x,this.y+this.Sz/4);
-                endShape(CLOSE);
-                stroke(25*0.5,35*0.5,48*0.5);
-                fill(25*0.5,35*0.5,48*0.5);
-                beginShape();
-                    vertex(this.x-this.Sz/2,this.y);
-                    vertex(this.x,this.y+this.Sz/4);
-                    vertex(this.x+this.Sz/2,this.y);
-                    vertex(this.x+this.Sz/2,this.y+this.Sz/4);
-                    vertex(this.x,this.y+this.Sz/2);
-                    vertex(this.x-this.Sz/2,this.y+this.Sz/4);
-                endShape(CLOSE);
-            break;
-            case 6:
-                noStroke();
-            fill(BG[0]*1.2,BG[1]*1.2,BG[2]*1.2);
-            beginShape();
-                vertex(this.x-this.Sz/2,height*10);
-                vertex(this.x-this.Sz/2,this.y+this.Sz/4);
-                vertex(this.x,this.y+this.Sz/2);
-                vertex(this.x,height*10);
-            endShape(CLOSE);
-            fill(BG[0]*1.1,BG[1]*1.1,BG[2]*1.1);
-            beginShape();
-            vertex(this.x,height*10);
-            vertex(this.x,this.y+this.Sz/2);
-            vertex(this.x+this.Sz/2,this.y+this.Sz/4);
-            vertex(this.x+this.Sz/2,height*10);
-            endShape(CLOSE);
-                fill(25,35,48);
-            beginShape();
-                vertex(this.x-this.Sz/2,this.y);
-                vertex(this.x,this.y-this.Sz/4);
-                vertex(this.x+this.Sz/2,this.y);
-                vertex(this.x,this.y+this.Sz/4);
-            endShape(CLOSE);
-            beginShape();
-                vertex(this.x-this.Sz/2,this.y);
-                vertex(this.x,this.y+this.Sz/4);
-                vertex(this.x+this.Sz/2,this.y);
-                vertex(this.x+this.Sz/2,this.y+this.Sz/4);
-                vertex(this.x,this.y+this.Sz/2);
-                vertex(this.x-this.Sz/2,this.y+this.Sz/4);
-            endShape(CLOSE);
-            if(this.timerCount%2===0){
-                fill(146, 69, 255,200);
-            }else{
-                fill(146, 69, 255,100);
-            }
-            beginShape();
-            vertex(this.x-this.Sz/2+10,this.designY);
-            vertex(this.x,this.designY-this.Sz/2);
-            vertex(this.x,this.designY+this.Sz/4-10);
-            endShape(CLOSE);
-            if(this.timerCount%2===0){
-                fill(146*0.8, 69*0.8, 255*0.8,200);
-            }else{
-                fill(146*0.8, 69*0.8, 255*0.8,100);
-            }
-            beginShape();
-            vertex(this.x,this.designY-this.Sz/2);
-            vertex(this.x,this.designY+this.Sz/4-10);
-            vertex(this.x+this.Sz/2-10,this.designY);
-            endShape(CLOSE);
-            break;
-        }
-    };
-}
-function Load(set,map){
-    for(var i=0;i<map.length;i++){
-        for(var j=0;j<map[i].length;j++){
-            var id=map[i][j];
-            switch(id){
-                case 'B':
-                    set.push(new Block(j*100-i*50,i*25,1));
-                break;
-                case 'X':
-                    set.push(new Block(j*100-i*50,i*25,2));
-                break;
-                case 'x':
-                    set.push(new Block(j*100-i*50,i*25,6));
-                break;
-                case 'O':
-                    set.push(new Block(j*100-i*50,i*25,3));
-                break;
-                case 'T':
-                    set.push(new Block(j*100-i*50,i*25,4));
-                break;
-                case 'P':
-                    set.push(new Block(j*100-i*50,i*25,1));
-                    player.respawn.x=j*100-i*50+50;
-                    player.respawn.y=i*25+75;
-                    player.preAntiX=j*100-i*50+50;
-                    player.preAntiY=i*25+75;
-                    player.antiX=j*100-i*50+50;
-                    player.antiY=i*25+75;
-                    player.x=j*100-i*50+50;
-                    player.y=i*25+75;
-                break;
-                case 'S':
-                    set.push(new Block(j*100-i*50,i*25,5));
-                break;
-            }
-        }
-    }
-}
-function Erase(set){
-    set.length=0;
-}
-function Player(x,y){
-    this.x=x;
-    this.y=y;
-    this.antiX=this.x;
-    this.antiY=this.y;
-    this.preAntiX=this.x;
-    this.preAntiY=this.y;
-    this.Sz=70;
-    this.onBlock=false;
-    this.respawn={
-        x:this.x,
-        y:this.y
-    };
-    var timer=0;
-    this.hitPortal=false;
-    this.update=function(blocks){
-        this.x=lerp(this.x,this.antiX,0.2);
-        this.y=lerp(this.y,this.antiY,0.2);
-        this.onBlock=false;
-        this.hitPortal=false;
-        this.detectBlocks(blocks);
-        if(!this.onBlock){
-        this.antiX=this.preAntiX;
-        this.antiY=this.preAntiY;
-        } 
-        if(dist(this.x,this.y,this.antiX,this.antiY)<1){
-            this.x=this.antiX;
-            this.y=this.antiY;
-        }
-        //console.log(this.x,this.y);
-    };
-    this.detectBlocks=function(blocks){
-        for(var i=0;i<blocks.length;i++){
-            var b=blocks[i];
-            if(dist(this.x-50,this.y-70,b.x,b.y)<40){
-                this.onBlock=true;//Good. Let's continue
-                switch(b.type){
-                    case 1:
-                    break;
-                    case 2:
-                        if(dist(this.x-50,this.y-70,b.x,b.y)<30){
-                            this.antiX=this.respawn.x;
-                            this.antiY=this.respawn.y;
-                        }
-                    break;
-                    case 3:
-                        this.hitPortal=true;
-                        timer=0;
-                    break;
-                    case 4:
-                        timer++;
-                        if(timer>120){
-                            timer=0;
-                            this.x=b.portalConnection.connectionX+50;
-                            this.y=b.portalConnection.connectionY+75;
-                            this.antiX=b.portalConnection.connectionX+50;
-                            this.antiY=b.portalConnection.connectionY+75;
-                        }
-                    break;
-                    case 5:
-                        this.onBlock=false;
-                    break;
-                    case 6:
-                        if(b.timerCount%2===0){
-                            this.antiX=this.respawn.x;
-                            this.antiY=this.respawn.y;
-                        }
-                    break;
-                }
-            }
-        }
-    };
-    this.show=function(){
-        strokeWeight(3);
-        fill(25,35,48);
-        stroke(255);
-        strokeCap(SQUARE);
-        beginShape();
-            vertex(this.x-this.Sz/2-50,this.y-107);
-            vertex(this.x-50,this.y+this.Sz/4-107);
-            vertex(this.x+this.Sz/2-50,this.y-107);
-            vertex(this.x-50,this.y-this.Sz/4-107);
-        endShape(CLOSE);
-        beginShape();
-        vertex(this.x-this.Sz/2-50,this.y-107);
-        vertex(this.x-50,this.y+this.Sz/4-107);
-        vertex(this.x-50,this.y+this.Sz/4+this.Sz/2-107);
-        vertex(this.x-this.Sz/2-50,this.y+this.Sz/2-107);
-        endShape(CLOSE);
-        beginShape();
-        vertex(this.x-50,this.y+this.Sz/4+this.Sz/2-107);
-        vertex(this.x+this.Sz/2-50,this.y+this.Sz/2-107);
-        vertex(this.x+this.Sz/2-50,this.y-107);
-        vertex(this.x-50,this.y+this.Sz/4-107);
-        endShape(CLOSE);
-        //ellipse(this.x-50,this.y-50,3,3);
-    };
-}
-var worldMap=[
-    [
-        'P   ',
-        ' B  ',
-        '  B ',
-        '   O',
-    ],
-    [
-        'P   ',
-        ' B  ',
-        '  B ',
-        '   B',
-        '   B',
-        '   B',
-        '   O',
-    ],
-    [
-        'X   ',
-        'BB  ',
-        'BBB ',
-        'B XB',
-        'O XB',
-        'X BB',
-        '  PB',
-    ],
-    [
-        'TXXXXXXT',
-        'BXXXXXXB',
-        'BXXXXXXB',
-        'BXXXXXXB',
-        'BXXXXXXB',
-        'OXXXXXXP',
-    ],
-    [
-        '                      O',
-        '   T         T        B',
-        '  XB         BB       B',
-        '  BB         BBB      B',
-        '  BB          BBB     B',
-        '  B            BB     B',
-        '  B             T     T',
-        '  T     T              ',
-        '        B              ',
-        '        B              ',
-        'T    T  B              ',
-        'B     B B              ',
-        'B      BB              ',
-        'B       B              ',
-        'P                      ',
-    ],
-    [
-        'B  ',
-        'BB ',
-        'BSB',
-        'BSB',
-        'OSB',
-        ' SB',
-        '  P',
-    ],
-    [
-        '         T            T',
-        '         BB            ',
-        '         BBB           ',
-        '         BBBB          ',
-        'TS       TBPBB        O',
-        'ST        BBBT        B',
-        '           BBB        B',
-        '            BB        B',
-        '             T        T',
-    ],
-    [
-        'TXXXXXXXT',
-        'XOSXXBBBB',
-        'XSSXXBBBB',
-        'XBSBBBXBX',
-        'XBBBBBBBX',
-        'XPXBXXXBX',
-    ],
-    [
-        '       B    ',
-        ' B SS       ',
-        ' BBPO       ',
-        ' B BST     T',
-        '  B        B',
-        'B T  T BXBXB',
-        '      BBBBBB',
-        '       BXBXB',
-    ],
-    [
-        'O   ',
-        'Bx  ',
-        'Bxx ',
-        'BxxB',
-        'BxxB',
-        ' xxB',
-        '  xB',
-        '   P',
-    ],
-    [
-        'P     ',
-        ' x    ',
-        '  B   ',
-        '   x  ',
-        '    B ',
-        '     x',
-        '     B',
-        '     x',
-        '     B',
-        '     x',
-        '     B',
-        '     O',
-    ],
-    [
-        'O    ',
-        'BB   ',
-        'XBB  ',
-        'XXBB ',
-        'XXxBB',
-        'XXXxB',
-        'BXxBX',
-        'BBxxX',
-        ' BBXX',
-        '  PBX',
-        '   BB',
-        '    B',
-    ],
-    [
-        'P    ',
-        ' x   ',
-        '  x  ',
-        '   x ',
-        '    O',        
-    ],
-    [
-        'P   ',
-        ' x  ',
-        '  x ',
-        '   B',
-        '   x',
-        '   x',
-        '   O',
-    ],
-    [
-        'P    ',
-        ' x   ',
-        'O x  ',
-        'B  x ',
-        'B   B',
-        ' x  x',
-        '  x x',
-        '   xx',
-        '    B',
-    ],
-    [],
-];
-var x=0;
-var y=0;
-var antiX=0;
-var antiY=0;
-var rand1X=random(-50,50);
-var rand2X=random(-50,50);
-var Antirand1X=random(-50,50);
-var Antirand2X=random(-50,50);
-var rand1Y=random(-50,50);
-var rand2Y=random(-50,50);
-var Antirand1Y=random(-50,50);
-var Antirand2Y=random(-50,50);
-var cam={
-  x:0,
-  y:0
-};
-function Game(){
-  background(BG[0],BG[1],BG[2]);
-  pushMatrix();
-  translate(width/2,height/2);
-  rotate(7*sin(rotation1));
-  rotation1+=1;
-  fill(BG[0]*1.05,BG[1]*1.05,BG[2]*1.05);
-  rect(-width/5,-height,2*width/5,height*3);
-  popMatrix();
-  pushMatrix();
-  translate(width/2,height/2);
-  rotate(7*sin(rotation2));
-  rotation2+=1;
-  fill(BG[0]*1.1,BG[1]*1.1,BG[2]*1.1);
-  rect(-width/10,-height,width/5,height*3);
-  popMatrix();
-  pushMatrix();
-  translate(width/2,height/2);
-  rotate(7*sin(rotation3));
-  rotation3+=1;
-  fill(BG[0]*1.3,BG[1]*1.3,BG[2]*1.3);
-  rect(-width/20,-height,width/10,height*3);
-  popMatrix();
-  noStroke();
-    pushMatrix();
-  translate(cam.x,cam.y);
-  cam.x=lerp(cam.x,width/2-player.x,0.05);
-  cam.y=lerp(cam.y,height/2-player.y,0.05);
-  for(var i=0;i<blocks.length;i++){
-    if(blocks[i].y-player.antiY<=-50){
-      blocks[i].animate();
-      blocks[i].detectBlocks(blocks);
-      blocks[i].show();
-    }
-  }
-  player.update(blocks);
-  player.show();
-  for(var i=0;i<blocks.length;i++){
-    if(blocks[i].y-player.antiY>-50){
-      blocks[i].animate();
-      blocks[i].detectBlocks(blocks);
-      blocks[i].show();
-    }
-  }
-  for(var i=0;i<blocks.length;i++){
-    var b=blocks[i];
-    if(b.type===3){
-      antiX=b.x;
-      antiY=b.y;
-    }
-    if(b.type===4){
-      noStroke();
-      fill(94, 255, 135,100);
-      beginShape();
-      vertex(b.x-b.Sz/2,-height*2);
-      vertex(b.x-b.Sz/2,b.y);
-      vertex(b.x,b.y+b.Sz/4);
-      vertex(b.x+b.Sz/2,b.y);
-      vertex(b.x+b.Sz/2,-height*2);
-      endShape(CLOSE);
-    }
-    if(b.type===5){
-      noStroke();
-      fill(255, 226, 72,100);
-      beginShape();
-      vertex(b.x-b.Sz/2,-height*2);
-      vertex(b.x-b.Sz/2,b.y);
-      vertex(b.x,b.y+b.Sz/4);
-      vertex(b.x+b.Sz/2,b.y);
-      vertex(b.x+b.Sz/2,-height*2);
-      endShape(CLOSE);
-    }
-  }
-  noStroke();
-  fill(131, 255, 137);
-  ellipse(x,y-25,50,50);
-  x=lerp(x,antiX,0.05);
-  y=lerp(y,antiY,0.05);
-  popMatrix();
-  for(var i=0;i<worldMap[level].length;i++){
-      levelWidth=worldMap[level][i].length;
-  }
-  levelHeight=worldMap[level].length;
-  if(player.hitPortal){
-    Erase(blocks);
-    level++;
-    Load(blocks,worldMap[level]);
-  }
-  if(level>14){
-    scene=2;
-  }
-}
-function Ending(){
-  background(BG[0],BG[1],BG[2]);
-  noStroke();
-  pushMatrix();
-  translate(width/2,height/2);
-  rotate(sin(rotation1));
-  rotation1+=1;
-  fill(BG[0]*1.05,BG[1]*1.05,BG[2]*1.05);
-  rect(-width/5,-height,2*width/5,height*3);
-  popMatrix();
-  pushMatrix();
-  translate(width/2,height/2);
-  rotate(sin(rotation2));
-  rotation2+=1;
-  fill(BG[0]*1.1,BG[1]*1.1,BG[2]*1.1);
-  rect(-width/10,-height,width/5,height*3);
-  popMatrix();
-  pushMatrix();
-  translate(width/2,height/2);
-  rotate(sin(rotation3));
-  rotation3+=1;
-  fill(BG[0]*1.3,BG[1]*1.3,BG[2]*1.3);
-  rect(-width/20,-height,width/10,height*3);
-  popMatrix();
-  textAlign(CENTER,CENTER);
-  textFont(createFont('Arial Black'),37);
-  fill(0,50);
-  text("ISO",width/2+rand1X,height/2-63+rand1Y);
-  text("By Karllr and Juanster",width/2+rand1X,height/2+rand1Y);
-  text("Please Reload to play again", width/2+rand1X,height/2+37+rand1Y);
-  fill(0,100);
-  text("ISO",width/2+rand2X,height/2-63+rand2Y);
-  text("By Karllr and Juanster",width/2+rand2X,height/2+rand2Y);
-  text("Please Reload to play again", width/2+rand2X,height/2+37+rand2Y);
-  fill(0);
-  text("ISO",width/2,height/2-63);
-  text("By Karllr and Juanster",width/2,height/2);
-  text("Please Reload to play again", width/2,height/2+37);
-  rand1X=lerp(rand1X,Antirand1X,0.05);
-  rand2X=lerp(rand2X,Antirand2X,0.05);
-  rand1Y=lerp(rand1Y,Antirand1Y,0.05);
-  rand2Y=lerp(rand2Y,Antirand2Y,0.05);
-  if(frameCount%60===0){
-    Antirand1X=random(-50,50);
-    Antirand2X=random(-50,50);
-    Antirand1Y=random(-50,50);
-    Antirand2Y=random(-50,50);
-  }
-}
-var song;
-var fps=120;
-//var font;
-//function setup() {
-  //createCanvas(windowWidth, windowHeight);
-  //song=loadSound('Creo-Reflections.mp3',ok);
-  player=new Player(0,0);
-  Load(blocks,worldMap[level]);
-  //font=loadFont('Poppins-Bold.ttf');
-//}
-function ok(){
-  //song.play();
-}
-var BG=[154, 228, 255];
-function draw() {
-  frameRate(fps);
-  background(BG[0],BG[1],BG[2]);
-  switch(scene){
-    case 1:
-      Game();
-    break;
-    case 2:
-      Ending();
-    break;
-  }
-  BG[0]=lerp(BG[0],154,0.01);
-  BG[1]=lerp(BG[1],228,0.01);
-  BG[2]=lerp(BG[2],255,0.01);
-  if(frameCount%120===0){
-    BG[0]=225*0.9;
-    BG[1]=164*0.9;
-    BG[2]=245*0.9;
-  }
-  //song.setLoop(true);
-  
-}
-function keyPressed(){
-  if(keyCode===UP){
-    player.antiX+=50;
-    player.antiY-=25;
-  }
-  if(keyCode===DOWN){
-    player.antiX-=50;
-    player.antiY+=25;
-  }
-  if(keyCode===LEFT){
-    player.antiX-=50;
-    player.antiY-=25;
-  }
-  if(keyCode===RIGHT){
-    player.antiX+=50;
-    player.antiY+=25;
-  }
-  if(keyCode===82){
-    player.antiX=player.respawn.x;
-    player.antiY=player.respawn.y;
-    player.yvel=0;
-  }
-  if(round(player.x)%50===0&&round(player.y)%25===0){
-    player.preAntiX=player.x;
-    player.preAntiY=player.y;
-  }
-}
-}};
+<html>
+<!-- Program exported to HTML using the KA Project Exporter by @MushyAvocado 
+-->
+	
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<title>A Small Game</title>
+	<style>
+		
+		
+		/* Change the color as you want */
+		:root {
+			--background-color: #000000;
+		}
+		
+		
+		html, body, #wrapper {
+			overflow: hidden;
+			width: 100%;
+		    height: 100%;
+			margin: 0px;
+			padding: 0px;
+		    width: calc(100% + 1px);
+		}
+		
+		body {
+		    background-color: var(--background-color);
+		}
+		
+		
+		canvas {
+			width: fit-content;
+			height: fit-content;
+		}
+		
+		canvas:focus {
+			outline: none;
+		}
+		
+		/* Automatically fits to the remaining height and centers the canvas it contains */
+		#wrapper {
+			padding: 0px;
+			margin: 0px;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			width: 100%;
+		}
+		
+</style>
+</head>
+<body id="wrapper">
+    <!-- Canvases with a class of "sketch" are applied to the program in the order importPJS() is called. -->
+    <canvas class="sketch"></canvas>
+	<!-- Load the PJS library -->
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/Khan/processing-js@master/processing.js"></script>
+	<!-- The exporter script must be loaded before the program script -->
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/Mushy-Avocado/KA-exporter@main/exporter.js"></script>
+	<!-- Run Khan Academy program and import PJS -->
+	<script type="application/javascript">
+		
+		
+		function program() {
+		    
+		    title("A Small Game");
+		    size(600, 600);
+		    
+		    // All code goes here
+			// [
+			var paused = false, pauseFade = 0;
+			var bg = color(74, 19, 65);
+			
+			var gameEnd = false, endTimer = 0;
+			smooth();
+			frameRate(60);
+			size(600, 600, P2D);
+			var bw = 40;
+			
+			var shake = 0;
+			
+			var levelNum = 0, levelChange = 0;
+			var levels = [
+			    [
+			    " @             ",
+			    "   +           ",
+			    "#####          ",
+			    " ###           ",
+			],
+			[
+			    "    +          ",
+			    " @ ###         ",
+			    "   ##          ",
+			    "####           ",
+			],
+			[
+			    "         +     ",
+			    "        ###    ",
+			    "        #      ",
+			    " @  ###        ",
+			    "    #          ",
+			    "###            ",
+			],
+			    [
+			    " @             ",
+			    "               ",
+			    "###            ",
+			    " x# +          ",
+			    "  ####         ",
+			],
+			[
+			    "       x       ",
+			    " @             ",
+			    "               ",
+			    "###            ",
+			    "#    ####      ",
+			    "# +  #xx       ",
+			    "######         ",
+			    " ####          ",
+			],
+			[
+			    "        x      ",
+			    "x    x         ",
+			    "          x    ",
+			    "               ",
+			    "    +          ",
+			    "  ####         ",
+			    " ##            ",
+			    " ## @  ##      ",
+			    " ##            ",
+			    "  ####         ",
+			    "   ##          ",
+			],
+			[
+			    "       x       ",
+			    "           x   ",
+			    " # #           ",
+			    "######  x      ",
+			    "#              ",
+			    "# @ #          ",
+			    "#   #   +      ",
+			    "##########     ",
+			    " ######        ",
+			],
+			[
+			    " x     x       ",
+			    "           x   ",
+			    "               ",
+			    "    x          ",
+			    " @ ###  +      ",
+			    "   # # ###     ",
+			    "####           ",
+			],
+			[
+			    "    x x        ",
+			    "   xxxxx       ",
+			    "               ",
+			    "  @            ",
+			    " #   x  +#     ",
+			    " ####x####     ",
+			    "  #######      ",
+			],
+			[
+			    " xxxxxxx       ",
+			    " x     x       ",
+			    " x   @ x       ",
+			    "#x     x#      ",
+			    "### #####      ",
+			    " ## ###        ",
+			    "  # #          ",
+			    "x # #   x      ",
+			    "               ",
+			    " #             ",
+			    "##    +        ",
+			    "#########      ",
+			    " ######x       ",
+			],
+			[
+			    "       x  x    x    ",
+			    "        xx     x    ",
+			    "  @       x   x     ",
+			    "           xxx      ",
+			    " ######             ",
+			    "##########          ",
+			    "#     ######      x ",
+			    "#     x #####     x ",
+			    "#     x   ###       ",
+			    "   +      x###  x   ",
+			    "  ###       ##    x ",
+			    "   x  #      #  x x ",
+			    "  x xx  #       x x ",
+			    "xx    xx  #    #####",
+			    "        xx  ####### ",
+			],
+			[
+			    " @             ",
+			    "     x    +    ",
+			    "####     ###   ",
+			    "####     ##    ",
+			    " ###     ###   ",
+			    " ###      ##   ",
+			    " ##       ##   ",
+			    " ##       #### ",
+			    " ##       #####",
+			    "  #     ###  ##",
+			    "  ##        +##",
+			    "   ##    ##### ",
+			    "    ########## ",
+			    "     #####     ",
+			],
+			[
+			    "         +     ",
+			    "       ####    ",
+			    " @      ##     ",
+			    "    ##         ",
+			    "###            ",
+			    "##             ",
+			    " #xxxxxxx      ",
+			    " ####          ",
+			    "  ##           ",
+			],
+			[
+			    "    +          ",
+			    " @ ###         ",
+			    "               ",
+			    "####           ",
+			    " ##            ",
+			],
+			
+			[
+			    "   +           ",
+			    "   ###    ####  ",
+			    " @  #          ",
+			    "               ",
+			    "####           ",
+			    " ##         ###b",
+			    "     ######### ",
+			    "      ######   ",
+			],
+			/*[
+			    "   +           ",
+			    "   ##          ",
+			    " @             ",
+			    "               ",
+			    "######         ",
+			    " #####b        ",
+			],*/
+			[
+			    "    #          ",
+			    " ####    +     ",
+			    "##### #####    ",
+			    "##    ##       ",
+			    "## @  ##       ",
+			    "##    ##       ",
+			    " ####b##       ",
+			    "  #####        ",
+			],
+			[
+			    " #########     ",
+			    "###  xxx###    ",
+			    "## @ x x ##    ",
+			    "##   x   #     ",
+			    "## # x         ",
+			    "##   x  ###    ",
+			    " ##      #  x  ",
+			    " ######b##  x  ",
+			    " ####    #  x  ",
+			    "  ##   + #     ",
+			    "   #  #####    ",
+			    "   #           ",
+			    "   #           ",
+			    "   #           ",
+			    "   #b####  x## ",
+			],
+			[
+			    "      x        ",
+			    "   x  x  x     ",
+			    "  xxx   xxx    ",
+			    "   xxx xxx     ",
+			    "x           x  ",
+			    "  @            ",
+			    "          +    ",
+			    " ###b###b###   ",
+			    " # # # # # #   ",
+			    "   # # # #     ",
+			    "   #   #       ",
+			    "     #         ",
+			],
+			[
+			    "     x         ",
+			    "x   ####       ",
+			    "     ##        ",
+			    " @         x   ",
+			    "               ",
+			    "###            ",
+			    "###      +     ",
+			    " ##     ###    ",
+			    " ##     ##     ",
+			    "  #     #      ",
+			    "  #bbbbb#      ",
+			    "  #     #      ",
+			],
+			[
+			    "       #############     ",
+			    "          #####x#        ",
+			    "             ##x         ",
+			    "               x         ",
+			    "               x         ",
+			    " @      ###  xxxxxx      ",
+			    "         xxxxx######     ",
+			    "###   # xx#############  ",
+			    "        x####         ## ",
+			    "    #   x ##           # ",
+			    "xxx     x ##           # ",
+			    "##xx    x ##     +     # ",
+			    " ##x  #xxx##           # ",
+			    "   x  ######           # ",
+			    "   x  #######    #     # ",
+			    "                       # ",
+			    "   x #########xx###xx### ",
+			    "   x     #############   ",
+			],
+			[
+			    "  xxxx         ",
+			    "   xx          ",
+			    "    x          ",
+			    "+   x #        ",
+			    "###   #        ",
+			    " ##   ###      ",
+			    " ##   ###      ",
+			    "  #   #####    ",
+			    "  #   #####    ",
+			    "  #bbb#   ##   ",
+			    "             # ",
+			    "  @   ##x    # ",
+			    " #########  ## ",
+			],
+			[
+			    "  # # # # # # # # # # #  ",
+			    "#########################",
+			    "  ###   ###   ###   ###  ",
+			    "   #     #     #     #   ",
+			    "   # xxx #     #  x  #   ",
+			    "                     x   ",
+			    "  @                     +",
+			    "            x            ",
+			    " ####bb#########bbbb#### ",
+			    "  # # # # # # # # # # #  ",
+			],
+			[
+			    "  # # # # # ####### # #  ",
+			    "#############     #######",
+			    "  ### x ###   xxx   ###  ",
+			    "   #  x  #  x     x  #  x",
+			    "   #     x   xx xx   # x ",
+			    "      x  x    x x        ",
+			    "  @      x              +",
+			    "       xxxx           x  ",
+			    " #### ######   ## ## ### ",
+			    "  # # # # #   # # # # # x",
+			    "  xx      x  # xxx## # # ",
+			    "  x    xx         x #    ",
+			    " xxxx#     # xxxxx##     ",
+			    "   x            x###     ",
+			    "  xxxxx###xxxx#####      ",
+			    "   xxxxxxxxxxxx##        ",
+			    "     ###########         ",
+			],
+			[
+			    "  # # # # # x       x    ",
+			    "########## # x      x    ",
+			    "  ###   ###   xx#  x    x",
+			    "   #    x# x  x# xx   xx ",
+			    "   #  xx    xx #   xxx   ",
+			    "    xx                   ",
+			    "  @      x         #    +",
+			    "        ###    #  x##    ",
+			    " ##### xx# ## ########## ",
+			    "  # # # #  x  # # # # #  ",
+			    "           x   x         ",
+			    "            xxx          ",
+			],
+			[
+			    "       x                 ",
+			    "       x                 ",
+			    "      x                  ",
+			    "x   xx                   ",
+			    " xxx                     ",
+			    "                         ",
+			    "                         ",
+			    "  @                     +",
+			    "       ##    x           ",
+			    " ###  ################## ",
+			    "  # # # # # # # # # # #  ",
+			    "                         ",
+			    "                         ",
+			    "                         ",
+			    "                         ",
+			],
+			[
+			    "     x x x     ",
+			    "   x x x x x   ",
+			    "   x x   x x   ",
+			    "   x   x   x   ",
+			    "               ",
+			    "  #         #  ",
+			    "  #  ##+##  #  ",
+			    "  #         #  ",
+			    "  ###     ###  ",
+			    "   #### ####   ",
+			    " @  ### ###    ",
+			    "        ##     ",
+			    "#######b##     ",
+			    " # # # # #     ",
+			    "               ",
+			],
+			];
+			
+			//levelNum = levels.length - 1;
+			var level = levels[levelNum];
+			
+			var p, lavaCrumbs;
+			var keys = {};
+			var blocks = [], lavas = [];
+			
+			var cam = {
+			    x: 0,
+			    y: 0,
+			};
+			
+			var scene = "reset";
+			var trans = {
+			    fade: 0,
+			    
+			    done: false,
+			    playing: false,
+			    speed: 0.08,
+			    
+			    nextScene: "game",
+			    
+			    mode: "smooth",
+			    changeFunc: {
+			        linear: function() {
+			            if(!trans.done) {
+			                trans.fade += trans.speed;
+			            } else {
+			                trans.fade -= trans.speed;
+			            }
+			        },
+			        smooth: function() {
+			            if(!trans.done) {
+			                trans.fade += trans.speed*0.05;
+			                trans.fade *= 1.1;
+			            } else {
+			                trans.fade -= trans.speed*0.01;
+			                trans.fade *= 0.9;
+			            }
+			        },
+			    },
+			    
+			    play: function(nextScene) {
+			        this.playing = true;
+			        this.done = false;
+			        
+			        this.nextScene = nextScene || this.nextScene;
+			    },
+			    run: function() {
+			        if(this.playing) {
+			            this.changeFunc[this.mode]();
+			            this.fade = constrain(this.fade, 0, 1);
+			            
+			            if(this.done) {
+			                this.drawOut();
+			            } else {
+			                this.drawIn();
+			            }
+			            
+			            if(this.fade >= 1) {
+			                this.done = true;
+			                if(scene === "game" && (p.dead || p.y > p.fallDeadY)) {
+			                    p.reset(p.ox, p.oy);
+			                }
+			                lavaCrumbs.arr = [];
+			                scene = this.nextScene;
+			            } else if(this.done && this.fade <= 0) {
+			                this.playing = false;
+			                this.fade = 0;
+			            }
+			            
+			        }
+			    },
+			    
+			    
+			    drawIn: function() {
+			        stroke(66, 25, 63, this.fade*1000);
+			        strokeWeight(this.fade*width);
+			        fill(bg, this.fade*100);
+			        rect(0, 0, width, height);
+			    },
+			    drawOut: function() {
+			        stroke(66, 25, 63, this.fade*1000);
+			        strokeWeight(this.fade*width);
+			        fill(bg, this.fade*255);
+			        rect(0, 0, width, height);
+			    },
+			};
+			
+			
+			var particleTypes = {
+			    lava: {
+			        minSize: 10,
+			        maxSize: 30,
+			        
+			        drag: 0.9,
+			        grav: 0.05,
+			        sizeDecrease: 0.3,
+			        fadeSpeed: 20,
+			        fadeDelay: 60,
+			        
+			        color1: color(57, 240, 82),
+			        color2: color(57, 240, 82),
+			        
+			    },
+			    player: {
+			        minSize: 2,
+			        maxSize: 30,
+			        
+			        drag: 0.99,
+			        grav: 0,
+			        sizeDecrease: 0.1,
+			        fadeSpeed: 20,
+			        fadeDelay: 60,
+			        
+			        color1: color(57, 240, 82),
+			        color2: color(57, 240, 82),
+			        
+			    },
+			};
+			function PartSystem(type) {
+			    this.type = type;
+			    this.t = particleTypes[type];
+			    this.arr = [];
+			}
+			PartSystem.prototype.newRandom = function(x, y, speed, attr) {
+			    this.newDirectional(x, y, random(0, 360), speed, 0, attr);
+			};
+			PartSystem.prototype.newDirectional = function(x, y, angle, speed, spread, attr) {
+			    angle += random(-spread, spread);
+			    
+			    this.arr.push({
+			        x: x,
+			        y: y,
+			        
+			        s: random(this.t.minSize, this.t.maxSize),
+			        
+			        vx: sin(angle)*speed,
+			        vy: cos(angle)*speed,
+			        
+			        time: 0,
+			        fade: attr === undefined ? 255 : attr,
+			        
+			        c: lerpColor(this.t.color1, this.t.color2, random()),
+			    });
+			};
+			PartSystem.prototype.run = function() {
+			    noStroke();
+			    for(var i = 0; i < this.arr.length; i++) {
+			        var a = this.arr[i];
+			        
+			        
+			        a.x += a.vx;
+			        a.y += a.vy;
+			        
+			        a.vx *= this.t.drag;
+			        a.vy *= this.t.drag;
+			        
+			        a.vy += this.t.grav;
+			        
+			        if(a.time > this.t.fadeDelay) {
+			            a.fade -= this.t.fadeSpeed;
+			        }
+			        
+			        a.s -= this.t.sizeDecrease;
+			        
+			        a.time++;
+			        
+			        fill(a.c, a.fade);
+			        ellipse(a.x, a.y, a.s, a.s);
+			        
+			        if(a.fade <= 0 || a.s <= 0) {
+			            this.arr.splice(i, 1);
+			            i--;
+			        }
+			    }
+			};
+			var lavaCrumbs = new PartSystem("lava");
+			var playerCrumbs = new PartSystem("player");
+			
+			var p = {
+			    x: 0,
+			    y: 0,
+			    w: 30,
+			    h: 30,
+			    
+			    ox: 0,
+			    oy: 0,
+			    
+			    vx: 0,
+			    vy: 0,
+			    jump: false,
+			    grav: 0.3,
+			    
+			    jumpV: -7.4,
+			    speed: 0.6,
+			    
+			    dead: false,
+			    fallDeadY: 1000,
+			};
+			p.draw = function() {
+			    fill(227, 205, 199);
+			    rect(this.x, this.y, this.w, this.h);
+			    
+			    cam.x = lerp(cam.x, this.x, 0.1);
+			    cam.y = lerp(cam.y, this.y, 0.1);
+			};
+			p.in = function(x, y, w, h) {
+			    return this.x + this.w > x && this.y + this.h > y && this.x < x + w && this.y < y + h;
+			};
+			p.collideX = function() {
+			    var x = this.x, vx = this.vx;
+			    for(
+			        var i = constrain(~~(this.y/bw), 0, blocks.length - 1);
+			        i < blocks.length && i < ~~(this.y/bw) + 2;
+			        i++
+			    ) {
+			        for(
+			            var j = constrain(~~(this.x/bw), 0, blocks[i].length - 1);
+			            j < blocks[i].length && j < ~~(this.x/bw) + 2;
+			            j++
+			        ) {
+			            if(p.in(blocks[i][j].x, blocks[i][j].y, blocks[i][j].w, blocks[i][j].h)) {
+			                if(blocks[i][j].solid) {
+			                    if(this.vx < 0) {
+			                        x = blocks[i][j].x + blocks[i][j].w;
+			                    } else if(this.vx > 0) {
+			                        x = blocks[i][j].x - this.w;
+			                    }
+			                    vx = 0;
+			                } else if(blocks[i][j].type === "+") {
+			                    levelChange = 1;
+			                }
+			            }
+			        }
+			    }
+			    this.vx = vx;
+			    this.x = x;
+			};
+			p.collideY = function() {
+			    var y = this.y, vy = this.vy, trampolined = false;
+			    for(
+			        var i = constrain(~~(this.y/bw), 0, blocks.length - 1);
+			        i < blocks.length && i < ~~(this.y/bw) + 2;
+			        i++
+			    ) {
+			        for(
+			            var j = constrain(~~(this.x/bw), 0, blocks[i].length - 1);
+			            j < blocks[i].length && j < ~~(this.x/bw) + 2;
+			            j++
+			        ) {
+			            if(p.in(blocks[i][j].x, blocks[i][j].y, blocks[i][j].w, blocks[i][j].h) && blocks[i][j].solid) {
+			                if(this.vy < 0) {
+			                    y = blocks[i][j].y + blocks[i][j].h;
+			                    if(!trampolined) {
+			                        if(blocks[i][j].type === "b") {
+			                            vy = -this.vy;
+			                            trampolined = true;
+			                        } else {
+			                            vy = 0;
+			                        }
+			                    }
+			                } else if(this.vy > 0) {
+			                    y = blocks[i][j].y - this.h;
+			                    this.jump = 10;
+			                    if(!trampolined) {
+			                        if(blocks[i][j].type === "b") {
+			                            vy = Math.min(-this.vy, this.jumpV*1.37);
+			                            shake = vy*0.3;
+			                            trampolined = true;
+			                        } else {
+			                            vy = 0;
+			                            if(this.vy > this.grav) {
+			                                shake = 2;
+			                            }
+			                        }
+			                    }
+			                }
+			            }
+			        }
+			    }
+			    this.vy = vy;
+			    this.y = y;
+			};
+			p.lavaCollide = function() {
+			    
+			    for(var i = 0; i < lavas.length; i++) {
+			        if(p.in(lavas[i].x, lavas[i].y, lavas[i].w, lavas[i].h)) {
+			            this.dead = true;
+			            trans.play("game");
+			        }
+			    }
+			};
+			p.update = function() {
+			    this.vx *= 0.8;
+			    
+			    if(keys[UP] && this.jump > 0) {
+			        this.vy = Math.min(this.vy, this.jumpV);
+			        this.jump = 0;
+			    }
+			    if(keys[LEFT]) {
+			        this.vx -= this.speed;
+			    }
+			    if(keys[RIGHT]) {
+			        this.vx += this.speed;
+			    }
+			    this.jump--;
+			    
+			    this.vy += this.grav;
+			    this.x += this.vx;
+			    this.collideX();
+			    this.y += this.vy;
+			    this.collideY();
+			    
+			    this.lavaCollide();
+			    
+			    this.draw();
+			    if(this.dead) {
+			        //this.reset(this.ox, this.oy);
+			        
+			    }
+			    
+			    if(this.y > this.fallDeadY) {
+			        trans.play();
+			    }
+			};
+			p.reset = function(x, y) {
+			    this.x = x;
+			    this.y = y;
+			    
+			    this.ox = x;
+			    this.oy = y;
+			    
+			    cam.x = x;
+			    cam.y = y;
+			    
+			    this.vx = 0;
+			    this.vy = 0;
+			    this.jump = 0;
+			    this.dead = false;
+			};
+			
+			
+			function inside(px, py, x, y, w, h) {
+			  return py >= y && py < y + h && px >= x && px < x + w;
+			}
+			function rayCheck(x, y) {
+			    return blocks[~~y][~~x] !== false && blocks[~~y][~~x].type !== "+";
+			}
+			function rayTrace(x, y, tx, ty) {
+			    x /= bw;
+			    y /= bw;
+			    tx /= bw;
+			    ty /= bw;
+			    
+			    var speed = 0.5;
+			    
+			    var a = atan2(tx - x, ty - y);
+			    var vx = sin(a)*speed, vy = cos(a)*speed;
+			    x += vx;
+			    y += vy;
+			    
+			    var d = dist(x, y, tx, ty);
+			    var travel = 0, n = 1, falloff = speed*0.1;
+			    while(travel + speed < d) {
+			        if(inside(x, y, 0, 0, level[0].length, level.length) && rayCheck(x, y) && n > 0.2) {
+			            n *= 0.2;
+			            falloff = speed*0.05;
+			        }
+			        
+			        n -= falloff;
+			        x += vx;
+			        y += vy;
+			        travel += speed;
+			        
+			        if(n < 0) {
+			            return 0;
+			        }
+			    }
+			    
+			    return n;
+			}
+			
+			var blockTypes = {
+			    "#": {
+			        solid: true,
+			        color: color(140, 38, 87),
+			    },
+			    "x": {
+			        solid: false,
+			        color: color(57, 240, 82),
+			        //color: color(167, 250, 0),
+			    },
+			    "+": {
+			        solid: false,
+			        color: color(242, 210, 65),
+			    },
+			    "b": {
+			        solid: true,
+			        color: color(144, 62, 207),
+			    },
+			};
+			
+			function Block(x, y, t) {
+			    this.x = x;
+			    this.y = y;
+			    
+			    this.w = bw;
+			    this.h = bw;
+			    
+			    this.type = t;
+			    t = blockTypes[t];
+			    this.c = t.color;
+			    this.solid = t.solid;
+			    
+			    this.fade = 1;
+			    this.n = 0;
+			}
+			Block.prototype.draw = function() {
+			    fill(this.c);
+			    rect(this.x, this.y, this.w, this.h);
+			};
+			Block.prototype.shade = function() {
+			    if(!paused) {
+			        if(inside(this.x, this.y, cam.x - (width + bw)*0.5, cam.y - (height + bw)*0.5, width + bw, height + bw)) {
+			            if(p.vx*p.vx + p.vy*p.vy > 1) {
+			        this.n = rayTrace(p.x + p.w*0.5, p.y + p.h*0.5, this.x, this.y) + 
+			            rayTrace(p.x + p.w*0.5, p.y + p.h*0.5, this.x + this.w, this.y) + 
+			            rayTrace(p.x + p.w*0.5, p.y + p.h*0.5, this.x, this.y + this.h) + 
+			            rayTrace(p.x + p.w*0.5, p.y + p.h*0.5, this.x + this.w, this.y + this.h);
+			            }
+			            this.fade = constrain(lerp(this.fade, 1 - (this.n*0.5), 0.1), 0, 1);
+			            fill(lerpColor(this.c, bg, this.fade));
+			            noStroke();
+			            rect(this.x, this.y, this.w, this.h);
+			        } else {
+			            this.fade = 1;
+			        }
+			    } else if(inside(this.x, this.y, cam.x - (width + bw)*0.5, cam.y - (height + bw)*0.5, width + bw, height + bw)) {
+			        fill(lerpColor(this.c, bg, this.fade));
+			        noStroke();
+			        rect(this.x, this.y, this.w, this.h);
+			    }
+			    
+			    if(this.type === "x") {
+			        if(random() < 0.03) {
+			            lavaCrumbs.newRandom(this.x + this.w*0.5, this.y + this.h*0.5, 4, 255 - this.fade*255);
+			        }
+			        rect(this.x, this.y, this.w, this.h + 1);
+			    }
+			    
+			};
+			
+			
+			function neighbors(arr, x, y) {
+			    
+			    var s = arr[y][x], match = arr[y][x];
+			    var sides = [
+			        0, -1,
+			        1, 0,
+			        0, 1,
+			        -1, 0
+			    ];
+			    
+			    for(var i = 0; i < sides.length; i += 2) {
+			        s += arr[y + sides[i + 1]][x + sides[i]] === match? "#" : " ";
+			    }
+			    return s;
+			}
+			function padLevel(lvl) {
+			    var s = "  ";
+			    for(var j = 0; j < lvl[0].length; j++) {
+			        s += " ";
+			    }
+			    for(var i = 0; i < lvl.length; i++) {
+			        lvl[i] = " " + lvl[i] + " ";
+			    }
+			    lvl.unshift(s);
+			    lvl.push(s);
+			    
+			    return lvl;
+			}
+			function fillLevel(lvl) {
+			    blocks = [];
+			    lavas = [];
+			    
+			    lavaCrumbs.arr = [];
+			    
+			    for(var y = 0; y < lvl.length; y++) {
+			        blocks.push([]);
+			        for(var x = 0; x < lvl[y].length; x++) {
+			            if(blockTypes[lvl[y][x]]) {
+			                if(lvl[y][x] === "x") {
+			                    lavas.push(new Block(x*bw, y*bw, lvl[y][x]));
+			                    blocks[y].push(false);
+			                } else {
+			                    blocks[y].push(new Block(x*bw, y*bw, lvl[y][x]));
+			                    if(blocks[y][x].type==="+" && levelNum === levels.length - 1) {
+			                        blocks[y][x].solid = true;
+			                    }
+			                }
+			            } else if(lvl[y][x] === "@") {
+			                p.reset(x*bw, y*bw);
+			                blocks[y].push(false);
+			                trans.play();
+			                trans.fade = 1;
+			            } else {
+			                blocks[y].push(false);
+			            }
+			        }
+			    }
+			}
+			fillLevel(level);
+			
+			
+			var parts = (function(k) {
+			    var n = [];
+			    for(var i = 0; i < k; i++) {
+			        n.push({
+			            x: random(-50, 1050),
+			            y: random(-50, 1050),
+			            z: random(100, random(100, 400)),
+			            s: 4,
+			            time: random(0, 360),
+			        });
+			    }
+			    return n;
+			})(200);
+			
+			
+			var wrap = function(n, w) {
+			    return n > 0 ? n % w : -(-n % w) + w;
+			};
+			var pers = function(e, z) {
+			    return e/(z/400);
+			};
+			
+			
+			var drawParts = function() {
+			    noStroke();
+			    fill(231, 255, 150, 20);
+			    for(var i = 0; i < parts.length; i++) {
+			        parts[i].time += 0.2;
+			        var s = pers(parts[i].s, parts[i].z);
+			        ellipse(pers(-150 + wrap(parts[i].x - cam.x + sin(parts[i].time)*30, 1100), parts[i].z), pers(wrap(parts[i].y - cam.y + cos(parts[i].time)*30, 1100) - 50, parts[i].z), s, s);
+			    }
+			};
+			
+			draw = function() {
+			    if(scene === "reset") {
+			        levelNum = 0;
+			        level = levels[levelNum];
+			        fillLevel(level);
+			        
+			        shake = 0;
+			        scene = "game";
+			        trans.play("game");
+			        gameEnd = false;
+			        endTimer = 0;
+			        
+			        playerCrumbs.arr = [];
+			    }
+			    background(bg);
+			    
+			    translate(~~-cam.x + (width - p.w)*0.5, ~~-cam.y + (height - p.h)*0.5);
+			    translate(~~random(-shake, shake), ~~random(-shake, shake));
+			    if(gameEnd && endTimer > 60) {
+			        var n = (sq(endTimer - 60)*0.01);
+			        translate(300, 300);
+			        scale(1/constrain(n*0.001 + 1, 1, Infinity));
+			        translate(-300, -300);
+			    }
+			    noStroke();
+			    
+			    lavaCrumbs.run();
+			    
+			    if(paused || p.dead || gameEnd) {
+			        p.draw();
+			    } else if(levelNum + 1 === levels.length && p.y < bw*6 && p.x >= bw*7 && p.x + p.w <= bw*8) {
+			        p.draw();
+			        gameEnd = true;
+			    } else {
+			        p.update();
+			    }
+			    if(p.dead && random() < 0.3) {
+			        lavaCrumbs.newRandom(p.x + p.w*0.5, p.y + p.h*0.5, 4);
+			    }
+			    
+			    for(var i = 0; i < blocks.length; i++) {
+			        for(var j = 0; j < blocks[i].length; j++) {
+			            if(blocks[i][j] !== false) {
+			                blocks[i][j].shade();
+			            }
+			        }
+			    }
+			    
+			    for(var i = 0; i < lavas.length; i++) {
+			        lavas[i].shade();
+			    }
+			    
+			    if(gameEnd) {
+			        p.draw();
+			        shake = lerp(shake, map(endTimer - 60, 300, 240, 1, 0), 0.1);
+			        endTimer++;
+			        
+			        if(endTimer > 360) {
+			            trans.play("reset");
+			        }
+			    } else {
+			        shake = lerp(shake, 0, 0.05);
+			    }
+			    
+			    
+			    resetMatrix();
+			    
+			    pushMatrix();
+			    if(gameEnd && endTimer > 60) {
+			        var n = (sq(endTimer - 60)*0.01);
+			        fill(bg, n);
+			        rect(0, 0, width, height);
+			        translate(300, 300);
+			        scale(1/constrain(n*0.001 + 1, 1, Infinity));
+			        translate(-300, -300);
+			    }
+			    drawParts();
+			    popMatrix();
+			    
+			    
+			    if(pauseFade > 0.05) {
+			        stroke(37, 0, 59, 50);
+			        strokeWeight(200*pauseFade);
+			        fill(bg, pauseFade*100);
+			        rect(0, 0, width, height);
+			        
+			        textAlign(LEFT, BOTTOM);
+			        fill(230, 230, 230, pauseFade*255);
+			        text("Game paused. Please mouse over the canvas to continue.", 10, height - 10);
+			    }
+			    
+			    if(paused && !gameEnd) {
+			        
+			        
+			        pauseFade = lerp(pauseFade, 1, 0.1);
+			    } else {
+			        pauseFade = lerp(pauseFade, 0, 0.1);
+			    }
+			    
+			    if(levelChange >= 1) {
+			        levelNum++;
+			        levelChange = 0;
+			        
+			        level = levels[levelNum];
+			        fillLevel(level);
+			    }
+			    
+			    trans.run();
+			};
+			keyPressed = function() {
+			    keys[keyCode] = true;
+			    keys[key] = true;
+			};
+			keyReleased = function() {
+			    delete keys[keyCode];
+			    delete keys[key];
+			};
+			function mouseOut() {
+			    if(keyCode !== 8) {
+			        paused = true;
+			    }
+			}
+			function mouseOver() {
+			    paused = false;
+			}
+			// ]
+			
+		}
+		
+		runPJS(program);
+		
+		// Add reload button on KA --> <script>
+		
+	</script>
+</body>
 
-  // Get the canvas that ProcessingJS will use
-  var canvas = document.getElementById("pekepeke"); 
-  // Pass the function to ProcessingJS constructor
-  var processingInstance = new Processing(canvas, programCode); 
-  </script>
 </html>
