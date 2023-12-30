@@ -64,7 +64,7 @@
 		
 		function program() {
 		    
-		    title("A Small Game");
+		    title("pekepeke");
 		    size(600, 600);
 		    
 		    // All code goes here
@@ -102,7 +102,7 @@
 			    "    #          ",
 			    "###            ",
 			],
-			    [
+			[
 			    " @             ",
 			    "               ",
 			    "###            ",
@@ -238,14 +238,7 @@
 			    "     ######### ",
 			    "      ######   ",
 			],
-			/*[
-			    "   +           ",
-			    "   ##          ",
-			    " @             ",
-			    "               ",
-			    "######         ",
-			    " #####b        ",
-			],*/
+
 			[
 			    "    #          ",
 			    " ####    +     ",
@@ -506,7 +499,8 @@
 			    },
 			};
 			
-			
+			//Chatgpt did this part :) 
+			//503-593
 			var particleTypes = {
 			    lava: {
 			        minSize: 10,
@@ -759,7 +753,7 @@
 			    this.dead = false;
 			};
 			
-			
+			//Same over here.
 			function inside(px, py, x, y, w, h) {
 			  return py >= y && py < y + h && px >= x && px < x + w;
 			}
@@ -1045,16 +1039,6 @@
 			    popMatrix();
 			    
 			    
-			    if(pauseFade > 0.05) {
-			        stroke(37, 0, 59, 50);
-			        strokeWeight(200*pauseFade);
-			        fill(bg, pauseFade*100);
-			        rect(0, 0, width, height);
-			        
-			        textAlign(LEFT, BOTTOM);
-			        fill(230, 230, 230, pauseFade*255);
-			        text("Game paused. Please mouse over the canvas to continue.", 10, height - 10);
-			    }
 			    
 			    if(paused && !gameEnd) {
 			        
@@ -1096,7 +1080,6 @@
 		
 		runPJS(program);
 		
-		// Add reload button on KA --> <script>
 		
 	</script>
 </body>
